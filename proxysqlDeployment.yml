@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: proxydeployment
+ namespace: default
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+    app: proxy
+ template:
+  metadata:
+   name: proxypods
+   labels:
+    app:  proxy
+  spec:
+    containers:
+    - name: proxycontainer
+      image: raja9658/proxysql:2
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 6033
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxysqlservice
+  namespace: default
+spec:
+ type: clusterIP
+ selector:
+   app: proxy
+ ports:
+ - port: 6033
+   targetPort: 6033

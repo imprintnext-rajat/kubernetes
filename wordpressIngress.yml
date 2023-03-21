@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name:  mydeployment
+ namespace: default
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+    app: mywordpress
+ template:
+  metadata:
+   name: wordpresspod
+   labels:
+    app: mywordpress
+  spec:
+    containers:
+    - name: wordpress
+      image: wordpress
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 80
+     
+
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: wordpresshpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mydeployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydeployservice
+  namespace: default
+spec:
+ type: NodePort
+ selector:
+   app: mywordpress
+ ports:
+ - port: 80
+   targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-resource2
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  
+spec:
+  rules:
+  - host: "34.93.105.40.nip.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: mydeployservice
+            port:
+              number: 80

@@ -1,0 +1,59 @@
+# this is for create gcp managed  cert for ingress
+# it is take maximum 30min to get activate from provisioning. 
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - staging-cloud.imprintnext.io  
+
+
+
+
+# this command use for create static ip (global) ,run in gcp shellbash  / create in console. This static ip should be global region.
+
+gcloud compute addresses create ADDRESS_NAME \
+    --global \
+    --ip-version [IPV4 | IPV6]
+
+
+
+# gke ingress rule
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "ingress-webapps" # static ip attached with domain
+    networking.gke.io/managed-certificates: "managed-cert" # certificate name
+    kubernetes.io/ingress.allow-http: "false" # Doesn't allow  http protocal
+spec:
+  rules:
+  - host: "staging-cloud.imprintnext.io"
+    http:
+      paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+
+
+some commands
+-------------
+kubectl  get  managedcertificate
+kubectl  describe managedcertificate (name)
+kubectl  describe managedcertificate <ingress-name> -watch
+kubectl get  ingress
+kubectl describe ingress (name)
+
+
+kubernetes.io/ingress.allow-http: "false"
+
+https://staging-cloud.imprintnext.io
+
+ nginx-html-default-Path ===/usr/share/nginx/html

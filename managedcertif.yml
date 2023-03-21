@@ -1,0 +1,10 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - staging-cloud.imprintnext.io
+
+managed-cert
+wp-admin/setup-config.php
