@@ -31,7 +31,7 @@ metadata:
     kubernetes.io/ingress.allow-http: "false" # Doesn't allow  http protocal
 spec:
   rules:
-  - host: "staging-cloud.imprintnext.io"
+  - host: "staging-cloud.imprintnext.io" # add when it is required
     http:
       paths:
       - path: "/*"
