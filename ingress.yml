@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx-example
   rules:
-  - host: "staging-cloud.imprintnext.io"
+  - host: "staging-cloud.imprintnext.io" #add when it is required 
     http:
       paths:
       - pathType: Prefix
